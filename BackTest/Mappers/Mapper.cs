@@ -2,11 +2,19 @@
 
 namespace BackTest.Mappers
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class Mapper
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="person"></param>
+        /// <returns></returns>
         public static PersonDto MapperPerson(Person person)
         {
-            PersonDto personDto = new PersonDto()
+            var personDto = new PersonDto()
             {
                 Name = person.Name,
                 DisplayName = person.DisplayName,
@@ -16,9 +24,14 @@ namespace BackTest.Mappers
             return personDto;
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="persons"></param>
+        /// <returns></returns>
         public static List<PersonDto> MapperListPersons(List<Person> persons)
         {
-            List<PersonDto> personsDto = new List<PersonDto>(persons.Select(x => new PersonDto
+            var personsDto = new List<PersonDto>(persons.Select(x => new PersonDto
             {
                 Name = x.Name,
                 DisplayName = x.DisplayName,

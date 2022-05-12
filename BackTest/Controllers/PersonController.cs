@@ -31,11 +31,11 @@ namespace BackTest.Controllers
         /// <response code="404">employees in company are absent</response>
         [Route("persons")]
         [HttpGet]
-        public async Task<IActionResult> GetAllPersonsAsync()
+        public async Task<ActionResult> GetAllPersonsAsync()
         {
             List<Person> persons = await _db.Persons.ToListAsync();
-            List<PersonDto> personsDto = new List<PersonDto>(Mapper.MapperListPersons(persons));
-            return Json(personsDto);
+            var presonsListDto = new List<PersonDto>(Mapper.MapperListPersons(persons));
+            return Json(presonsListDto);
         }
 
 
@@ -48,7 +48,7 @@ namespace BackTest.Controllers
         /// <response code="404">employee with this id not found</response>
         [Route("person/{id}")]
         [HttpGet]
-        public async Task<IActionResult> GetPersonAsync(long id)
+        public async Task<ActionResult> GetPersonAsync(long id)
         {
             Person person = await _db.Persons.FindAsync(id);
             if (person == null)
@@ -68,7 +68,7 @@ namespace BackTest.Controllers
         /// <response code="400">Employee not created</response>
         [Route("person")]
         [HttpPost]
-        public async Task<StatusCodeResult> CreatePersonAsync([FromBody] CreatePersonDto model)
+        public async Task<ActionResult> CreatePersonAsync([FromBody] CreatePersonDto model)
         {
             if (ModelState.IsValid)
             {
@@ -90,7 +90,7 @@ namespace BackTest.Controllers
         /// <response code="404">Employee not found</response>
         [Route("person/{id}")]
         [HttpPut]
-        public async Task<StatusCodeResult> UpdatePersonAsync([FromBody] UpdatePersonDto model, long id)
+        public async Task<ActionResult> UpdatePersonAsync([FromBody] UpdatePersonDto model, long id)
         {
             Person person = await _db.Persons.FindAsync(id);
             if (person == null)
@@ -114,7 +114,7 @@ namespace BackTest.Controllers
         /// <remarks code="404">Employee not founded</remarks>
         [Route("person/{id}")]
         [HttpDelete]
-        public async Task<StatusCodeResult> DeletePersonAsync(long id)
+        public async Task<ActionResult> DeletePersonAsync(long id)
         {
             Person person = await _db.Persons.FindAsync(id);
             if (person == null)

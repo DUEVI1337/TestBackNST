@@ -4,6 +4,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BackTest.Services
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class PersonActions
     {
         private readonly DataContext _db;
@@ -20,7 +23,7 @@ namespace BackTest.Services
         /// <returns>returns created <seealso cref="Person"/></returns>
         public async Task<Person> NewPersonAsync(string name, string displayName)
         {
-            Person person = new Person { Name = name, DisplayName = displayName };
+            var person = new Person { Name = name, DisplayName = displayName };
             await _db.Persons.AddAsync(person);
             await _db.SaveChangesAsync();
             return person;
@@ -32,7 +35,7 @@ namespace BackTest.Services
         /// <param name="name">name skill</param>
         public async Task NewSkillAsync(string name)
         {
-            Skill skill = new Skill { Name = name };
+            var skill = new Skill { Name = name };
             await _db.Skills.AddAsync(skill);
             await _db.SaveChangesAsync();
         }
@@ -45,10 +48,12 @@ namespace BackTest.Services
         /// <param name="levelSkill">level skill</param>
         public async Task NewPersonSkillsAsync(long id, string skillName, byte levelSkill)
         {
-            PersonSkills personSkills = new PersonSkills();
-            personSkills.PersonId = id;
-            personSkills.SkillName = skillName;
-            personSkills.Level = levelSkill;
+            var personSkills = new PersonSkills()
+            {
+                PersonId = id,
+                SkillName = skillName,
+                Level = levelSkill
+            };
             await _db.PersonSkills.AddAsync(personSkills);
             await _db.SaveChangesAsync();
         }
@@ -74,43 +79,61 @@ namespace BackTest.Services
         /// <summary>
         /// Add or/and update skills for person
         /// </summary>
-        /// <param name="personSkills">update skill for person</param>
-        /// <param name="person">/param>
+        /// <param name="newPersonSkills">update skill for person</param>
+        /// <param name="person"></param>
         /// <returns>created or/and update skills for person</returns>
-        public async Task ChangePersonSkillsAsync(Dictionary<string, byte> personSkills, Person person)
+        public async Task ChangePersonSkillsAsync(Dictionary<string, byte> newPersonSkills, Person person)
         {
-            for (int i = 0; i < personSkills.Count; i++)
+            List<PersonSkills> personSkills = await _db.PersonSkills.Where(x => x.PersonId == person.Id).ToListAsync();
+            for (int i = 0; i < newPersonSkills.Count; i++)
             {
-                var skillPerson = personSkills.ElementAt(i);
-                if (!_db.Skills.Select(x => x.Name).Contains(skillPerson.Key))
+                var newSkillPerson = newPersonSkills.ElementAt(i);
+                if (!_db.Skills.Select(x => x.Name).Contains(newSkillPerson.Key))
                 {
-                    await NewSkillAsync(skillPerson.Key);
+                    await NewSkillAsync(newSkillPerson.Key);
                 }
-                else if (person.PersonSkills.Select(x => x.SkillName).Contains(skillPerson.Key))
+                else if(person.PersonSkills.Select(x => x.SkillName).Contains(newSkillPerson.Key))
                 {
-                    await UpdatePersonSkillAsync(person.Id, skillPerson.Key, skillPerson.Value);
+                    await UpdatePersonSkillAsync(person.Id, newSkillPerson.Key, newSkillPerson.Value);
                     continue;
                 }
-                await NewPersonSkillsAsync(person.Id, skillPerson.Key, skillPerson.Value);
+                await NewPersonSkillsAsync(person.Id, newSkillPerson.Key, newSkillPerson.Value);
+                DeletePersonSkill(newSkillPerson.Key, personSkills);
+            }
+            _db.PersonSkills.RemoveRange(personSkills);
+            await _db.SaveChangesAsync();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="nameSkill"></param>
+        /// <param name="personSkills"></param>
+        public void DeletePersonSkill(string nameSkill, List<PersonSkills> personSkills)
+        {
+            PersonSkills containsSkillPerson = personSkills.FirstOrDefault(x => x.SkillName == nameSkill);
+            if (containsSkillPerson != default)
+            {
+                personSkills.Remove(containsSkillPerson);
             }
         }
 
         /// <summary>
         /// Add new skills for person
         /// </summary>
-        /// <param name="personSkills">skills person</param>
+        /// <param name="newPersonSkills">skills person</param>
         /// <param name="person"></param>
         /// <returns>created skills for person</returns>
-        public async Task AddPersonSkillsAsync(Dictionary<string, byte> personSkills, Person person)
+        public async Task AddPersonSkillsAsync(Dictionary<string, byte> newPersonSkills, Person person)
         {
-            for (int i = 0; i < personSkills.Count; i++)
+            for (int i = 0; i < newPersonSkills.Count; i++)
             {
-                var skillPerson = personSkills.ElementAt(i);
-                if (!_db.Skills.Select(x => x.Name).Contains(skillPerson.Key))
+                var newSkillPerson = newPersonSkills.ElementAt(i);
+                if (!_db.Skills.Select(x => x.Name).Contains(newSkillPerson.Key))
                 {
-                    await NewSkillAsync(skillPerson.Key);
+                    await NewSkillAsync(newSkillPerson.Key);
                 }
-                await NewPersonSkillsAsync(person.Id, skillPerson.Key, skillPerson.Value);
+                await NewPersonSkillsAsync(person.Id, newSkillPerson.Key, newSkillPerson.Value);
             }
         }
     }
