@@ -3,15 +3,15 @@
 namespace BackTest.Mappers
 {
     /// <summary>
-    /// 
+    /// This class contains mappers for models
     /// </summary>
     public class Mapper
     {
         /// <summary>
-        /// 
+        /// Mapping object <seealso cref="Person"/> in <seealso cref="PersonDto"/>
         /// </summary>
         /// <param name="person"></param>
-        /// <returns></returns>
+        /// <returns>Object <seealso cref="PersonDto"/></returns>
         public static PersonDto MapperPerson(Person person)
         {
             var personDto = new PersonDto()
@@ -25,10 +25,10 @@ namespace BackTest.Mappers
         }
 
         /// <summary>
-        /// 
+        /// Mapping List objects <see cref="Person"/> in list objects <see cref="PersonDto"/>
         /// </summary>
         /// <param name="persons"></param>
-        /// <returns></returns>
+        /// <returns>List objects <see cref="PersonDto"/></returns>
         public static List<PersonDto> MapperListPersons(List<Person> persons)
         {
             var personsDto = new List<PersonDto>(persons.Select(x => new PersonDto

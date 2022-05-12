@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 namespace BackTest.Services
 {
     /// <summary>
-    /// 
+    /// This class contains methods for working with data about a person 
     /// </summary>
     public class PersonActions
     {
@@ -77,11 +77,10 @@ namespace BackTest.Services
         }
 
         /// <summary>
-        /// Add or/and update skills for person
+        /// Update skills for person
         /// </summary>
         /// <param name="newPersonSkills">update skill for person</param>
         /// <param name="person"></param>
-        /// <returns>created or/and update skills for person</returns>
         public async Task ChangePersonSkillsAsync(Dictionary<string, byte> newPersonSkills, Person person)
         {
             List<PersonSkills> personSkills = await _db.PersonSkills.Where(x => x.PersonId == person.Id).ToListAsync();
@@ -105,7 +104,7 @@ namespace BackTest.Services
         }
 
         /// <summary>
-        /// 
+        /// Remove skill from person by skill name
         /// </summary>
         /// <param name="nameSkill"></param>
         /// <param name="personSkills"></param>
@@ -123,7 +122,6 @@ namespace BackTest.Services
         /// </summary>
         /// <param name="newPersonSkills">skills person</param>
         /// <param name="person"></param>
-        /// <returns>created skills for person</returns>
         public async Task AddPersonSkillsAsync(Dictionary<string, byte> newPersonSkills, Person person)
         {
             for (int i = 0; i < newPersonSkills.Count; i++)

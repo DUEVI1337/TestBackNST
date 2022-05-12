@@ -97,8 +97,8 @@ namespace BackTest.Controllers
             {
                 return NotFound();
             }
-            person.Name = model.Name == null ? person.Name : model.Name;
-            person.DisplayName = model.DisplayName == null ? person.DisplayName : model.DisplayName;
+            person.Name = model.Name ?? person.Name;
+            person.DisplayName = model.DisplayName ?? person.DisplayName;
             _db.Persons.Update(person);
             await _db.SaveChangesAsync();
             await _personActions.ChangePersonSkillsAsync(model.PersonSkills, person);
