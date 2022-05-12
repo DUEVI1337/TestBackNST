@@ -27,8 +27,6 @@ builder.Services.AddDbContext<DataContext>(opt =>
     opt.UseLazyLoadingProxies();
 });
 
-builder.Services.AddTransient<PersonActions>();
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

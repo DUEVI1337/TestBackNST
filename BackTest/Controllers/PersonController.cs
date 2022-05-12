@@ -1,6 +1,7 @@
 ﻿using BackTest.Data;
 using BackTest.Mappers;
 using BackTest.Models;
+using BackTest.Repository;
 using BackTest.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -16,12 +17,12 @@ namespace BackTest.Controllers
     [ApiController]
     public class PersonController : Controller
     {
-        private readonly DataContext _db;
-        private readonly PersonActions _personActions;
-        public PersonController(DataContext db, PersonActions personActions)
+        private readonly PersonService _personService;
+        private readonly PersonRepository _personRepository;
+        public PersonController(PersonService personService, PersonRepository personRepository)
         {
-            _db = db;
-            _personActions = personActions;
+            _personService = personService;
+            _personRepository = personRepository;
         }
 
         /// <summary>
@@ -29,14 +30,21 @@ namespace BackTest.Controllers
         /// </summary>
         /// <returns>Json file with a list all employees</returns>
         /// <response code="200">returns json file with employees</response>
+        /// <response code="400">failed get persons</response>
         /// <response code="404">employees in company are absent</response>
         [Route("persons")]
         [HttpGet]
         public async Task<ActionResult> GetAllPersonsAsync()
         {
-            List<Person> persons = await _db.Persons.Include(x=>x.PersonSkills).ToListAsync();
-            var presonsListDto = new List<PersonDto>(Mapper.MapperListPersons(persons));
-            return Json(presonsListDto);
+            try
+            {
+                return Json(await _personService.GetAllPersonsAsync());
+            }
+            catch (Exception ex)
+            {
+                await Log.Logger.Log($"Не удалось создать Person, исключение {ex}", Log.TypeLog.Error);
+                return BadRequest();
+            }
         }
 
 
@@ -46,18 +54,21 @@ namespace BackTest.Controllers
         /// <param name="id">id employee we want found</param>
         /// <returns>Json file with found employee</returns>
         /// <response code="200">return found employee</response>
+        /// <response code="400">failed get person</response>
         /// <response code="404">employee with this id not found</response>
         [Route("person/{id}")]
         [HttpGet]
         public async Task<ActionResult> GetPersonAsync(long id)
         {
-            Person person = await _db.Persons.FindAsync(id);
-            if (person == null)
+            try
             {
-                return NotFound();
+                return Json(await _personService.GetPersonAsync(id));
             }
-            PersonDto personDto = Mapper.MapperPerson(person);
-            return Json(personDto);
+            catch (Exception ex)
+            {
+                await Log.Logger.Log($"Не удалось создать Person, исключение {ex}", Log.TypeLog.Error);
+                return BadRequest();
+            }
         }
 
         /// <summary>
@@ -71,21 +82,16 @@ namespace BackTest.Controllers
         [HttpPost]
         public async Task<ActionResult> CreatePersonAsync([FromBody] CreatePersonDto model)
         {
-            if (ModelState.IsValid)
+            try
             {
-                try
-                {
-                    Person person = await _personActions.NewPersonAsync(model.Name, model.DisplayName);
-                    await _personActions.AddPersonSkillsAsync(model.PersonSkills, person);
-                    return Ok();
-                }
-                catch (Exception ex)
-                {
-                    await Log.Logger.Log($"Не удалось создать Person, исключение {ex}", Log.TypeLog.Error);
-                    return BadRequest();
-                }
+                await _personService.CreatePersonAsync(model);
+                return Ok();
             }
-            return BadRequest();
+            catch (Exception ex)
+            {
+                await Log.Logger.Log($"Не удалось создать Person, исключение {ex}", Log.TypeLog.Error);
+                return BadRequest();
+            }
         }
 
         /// <summary>
@@ -101,17 +107,16 @@ namespace BackTest.Controllers
         [HttpPut]
         public async Task<ActionResult> UpdatePersonAsync([FromBody] UpdatePersonDto model, long id)
         {
-            Person person = await _db.Persons.FindAsync(id);
-            if (person == null)
+            try
             {
-                return NotFound();
+                await _personService.UpdatePersonAsync(model, id);
+                return Ok();
             }
-            person.Name = model.Name ?? person.Name;
-            person.DisplayName = model.DisplayName ?? person.DisplayName;
-            _db.Persons.Update(person);
-            await _db.SaveChangesAsync();
-            await _personActions.ChangePersonSkillsAsync(model.PersonSkills, person);
-            return Ok();
+            catch (Exception ex)
+            {
+                await Log.Logger.Log($"Не удалось создать Person, исключение {ex}", Log.TypeLog.Error);
+                return BadRequest();
+            }
         }
 
         /// <summary>
@@ -120,19 +125,22 @@ namespace BackTest.Controllers
         /// <param name="id">id employee we want delete</param>
         /// <returns>status code about the success of deleting an employee</returns>
         /// <remarks code="200">Employee successfully deleted</remarks>
+        /// <response code="400">failed delete person</response>
         /// <remarks code="404">Employee not founded</remarks>
         [Route("person/{id}")]
         [HttpDelete]
         public async Task<ActionResult> DeletePersonAsync(long id)
         {
-            Person person = await _db.Persons.FindAsync(id);
-            if (person == null)
+            try
             {
-                return NotFound();
+                await _personRepository.DeletePersonAsync(id);
+                return Ok();
             }
-            _db.Persons.Remove(person);
-            await _db.SaveChangesAsync();
-            return Ok();
+            catch (Exception ex)
+            {
+                await Log.Logger.Log($"Не удалось создать Person, исключение {ex}", Log.TypeLog.Error);
+                return BadRequest();
+            }
         }
     }
 }
