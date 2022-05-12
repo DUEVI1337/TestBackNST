@@ -4,6 +4,7 @@ using BackTest.Models;
 using BackTest.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Log = BackTest.Loggers;
 
 namespace BackTest.Controllers
 {
@@ -33,7 +34,7 @@ namespace BackTest.Controllers
         [HttpGet]
         public async Task<ActionResult> GetAllPersonsAsync()
         {
-            List<Person> persons = await _db.Persons.ToListAsync();
+            List<Person> persons = await _db.Persons.Include(x=>x.PersonSkills).ToListAsync();
             var presonsListDto = new List<PersonDto>(Mapper.MapperListPersons(persons));
             return Json(presonsListDto);
         }
@@ -72,9 +73,17 @@ namespace BackTest.Controllers
         {
             if (ModelState.IsValid)
             {
-                Person person = await _personActions.NewPersonAsync(model.Name, model.DisplayName);
-                await _personActions.AddPersonSkillsAsync(model.PersonSkills, person);
-                return Ok();
+                try
+                {
+                    Person person = await _personActions.NewPersonAsync(model.Name, model.DisplayName);
+                    await _personActions.AddPersonSkillsAsync(model.PersonSkills, person);
+                    return Ok();
+                }
+                catch (Exception ex)
+                {
+                    await Log.Logger.Log($"Не удалось создать Person, исключение {ex}", Log.TypeLog.Error);
+                    return BadRequest();
+                }
             }
             return BadRequest();
         }

@@ -26,6 +26,7 @@ builder.Services.AddDbContext<DataContext>(opt =>
     opt.UseSqlServer(builder.Configuration.GetConnectionString("conStr"));
     opt.UseLazyLoadingProxies();
 });
+
 builder.Services.AddTransient<PersonActions>();
 
 var app = builder.Build();
