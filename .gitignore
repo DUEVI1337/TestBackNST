@@ -13,7 +13,7 @@
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
 
-**/BackTest/Log.txt
+Log.txt
 
 # Mono auto generated files
 mono_crash.*
