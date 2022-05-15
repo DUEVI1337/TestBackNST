@@ -39,7 +39,7 @@ namespace BackTest.Controllers
             }
             catch (Exception ex)
             {
-                await Log.Logger.Log($"Не удалось получить всех Person, исключение {ex}", Log.TypeLog.Error);
+                await Log.Logger.LogFile($"Не удалось получить всех Person, исключение {ex}", Log.TypeLog.Error);
                 return BadRequest();
             }
         }
@@ -68,7 +68,7 @@ namespace BackTest.Controllers
             }
             catch (Exception ex)
             {
-                await Log.Logger.Log($"Не удалось получить определенного Person, исключение {ex}", Log.TypeLog.Error);
+                await Log.Logger.LogFile($"Не удалось получить определенного Person, исключение {ex}", Log.TypeLog.Error);
                 return BadRequest();
             }
         }
@@ -93,7 +93,7 @@ namespace BackTest.Controllers
             }
             catch (Exception ex)
             {
-                await Log.Logger.Log($"Не удалось создать Person, исключение {ex}", Log.TypeLog.Error);
+                await Log.Logger.LogFile($"Не удалось создать Person, исключение {ex}", Log.TypeLog.Error);
                 return BadRequest();
             }
         }
@@ -124,7 +124,7 @@ namespace BackTest.Controllers
             }
             catch (Exception ex)
             {
-                await Log.Logger.Log($"Не удалось обновить Person, исключение {ex}", Log.TypeLog.Error);
+                await Log.Logger.LogFile($"Не удалось обновить Person, исключение {ex}", Log.TypeLog.Error);
                 return BadRequest();
             }
         }
@@ -152,7 +152,7 @@ namespace BackTest.Controllers
             }
             catch (Exception ex)
             {
-                await Log.Logger.Log($"Не удалось удалить Person, исключение {ex}", Log.TypeLog.Error);
+                await Log.Logger.LogFile($"Не удалось удалить Person, исключение {ex}", Log.TypeLog.Error);
                 return BadRequest();
             }
         }

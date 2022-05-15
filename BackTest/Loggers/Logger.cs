@@ -29,7 +29,7 @@
         /// </summary>
         /// <param name="messageLog"></param>
         /// <param name="typeLog"></param>
-        public async static Task Log(string messageLog, TypeLog typeLog)
+        public async static Task LogFile(string messageLog, TypeLog typeLog)
         {
             using (StreamWriter writer = new StreamWriter("Log.txt", true))
             {

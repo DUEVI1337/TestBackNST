@@ -15,8 +15,5 @@ namespace BackTest.Data
         {
             modelBuilder.Entity<PersonSkills>().HasKey(x => new { x.PersonId, x.SkillName });
         }
-
-        public static ILoggerFactory ContextLoggerFactory
-    => LoggerFactory.Create(b => b.AddConsole().AddFilter("", LogLevel.Information));
     }
 }

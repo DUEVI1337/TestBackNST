@@ -40,42 +40,24 @@ namespace BackTest.Services
         /// <summary>
         /// <inheritdoc/>
         /// </summary>
+        /// <param name="newPersonSkills">skills person</param>
         /// <param name="idPerson"></param>
-        /// <param name="skillName"></param>
-        /// <param name="levelSkill"></param>
-        public async Task UpdatePersonSkillAsync(long idPerson, string skillName, byte levelSkill)
+        public async Task AddPersonSkillsAsync(Dictionary<string, byte> newPersonSkills, long idPerson)
         {
-            PersonSkills personSkills = await _personSkillsRepository.GetPersonSkillAsync(idPerson, skillName);
-            if (levelSkill != personSkills.Level)
+            for (int i = 0; i < newPersonSkills.Count; i++)
             {
-                personSkills.Level = levelSkill;
-                await _personSkillsRepository.UpdatePersonSkillAsync(personSkills);
+                var newSkillPerson = newPersonSkills.ElementAt(i);
+                await NewPersonSkillsAsync(idPerson, newSkillPerson.Key, newSkillPerson.Value);
             }
-
         }
 
         /// <summary>
-        /// <inheritdoc/>
-        /// </summary>
-        /// <param name="nameSkill"></param>
-        /// <param name="personSkills"></param>
-        public List<PersonSkills> DeletePersonSkill(string nameSkill, List<PersonSkills> personSkills)
-        {
-            PersonSkills containsSkillPerson = personSkills.FirstOrDefault(x => x.SkillName == nameSkill);
-            if (containsSkillPerson != null)
-            {
-                personSkills.Remove(containsSkillPerson);
-            }
-            return personSkills;
-        }
-
-        /// <summary>
-        /// <inheritdoc/>
+        /// Add new <see cref="Skill"/> for <see cref="Person"/> and save in database
         /// </summary>
         /// <param name="idPerson">id employee whom we want add skills</param>
         /// <param name="skillName">name skill</param>
         /// <param name="levelSkill">level skill</param>
-        public async Task NewPersonSkillsAsync(long idPerson, string skillName, byte levelSkill)
+        private async Task NewPersonSkillsAsync(long idPerson, string skillName, byte levelSkill)
         {
             var personSkill = new PersonSkills()
             {
@@ -87,17 +69,36 @@ namespace BackTest.Services
         }
 
         /// <summary>
-        /// <inheritdoc/>
+        /// Update <see cref="PersonSkills"/> for <see cref="Person"/> by his ID
         /// </summary>
-        /// <param name="newPersonSkills">skills person</param>
-        /// <param name="idPerson"></param>
-        public async Task AddPersonSkillsAsync(Dictionary<string, byte> newPersonSkills, long idPerson)
+        /// <param name="idPerson">id employee whom we want update level skill</param>
+        /// <param name="skillName">name skill</param>
+        /// <param name="levelSkill">level skill</param>
+        private async Task UpdatePersonSkillAsync(long idPerson, string skillName, byte levelSkill)
         {
-            for (int i = 0; i < newPersonSkills.Count; i++)
+            PersonSkills personSkills = await _personSkillsRepository.GetPersonSkillAsync(idPerson, skillName);
+            if (levelSkill != personSkills.Level)
             {
-                var newSkillPerson = newPersonSkills.ElementAt(i);
-                await NewPersonSkillsAsync(idPerson, newSkillPerson.Key, newSkillPerson.Value);
+                personSkills.Level = levelSkill;
+                await _personSkillsRepository.UpdatePersonSkillAsync(personSkills);
             }
+
         }
+
+        /// <summary>
+        /// Remove <see cref="Skill"/> from database by skill name
+        /// </summary>
+        /// <param name="nameSkill"></param>
+        /// <param name="personSkills"></param>
+        private List<PersonSkills> DeletePersonSkill(string nameSkill, List<PersonSkills> personSkills)
+        {
+            PersonSkills containsSkillPerson = personSkills.FirstOrDefault(x => x.SkillName == nameSkill);
+            if (containsSkillPerson != null)
+            {
+                personSkills.Remove(containsSkillPerson);
+            }
+            return personSkills;
+        }
+
     }
 }

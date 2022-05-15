@@ -32,7 +32,6 @@ namespace BackTest.Data.Repository
         public async Task AddSkillAsync(Skill skill)
         {
             await _db.Skills.AddAsync(skill);
-            await _db.SaveChangesAsync();
         }
 
         /// <summary>

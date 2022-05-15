@@ -33,10 +33,10 @@ namespace BackTest.Services
         }
 
         /// <summary>
-        /// <inheritdoc/>
+        /// Create new skill and add in database
         /// </summary>
-        /// <param name="name"><inheritdoc/></param>
-        public async Task NewSkillAsync(string name)
+        /// <param name="name">name skill</param>
+        private async Task NewSkillAsync(string name)
         {
             var skill = new Skill { Name = name };
             await _skillRepository.AddSkillAsync(skill);

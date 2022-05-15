@@ -28,7 +28,6 @@ builder.Services.AddDbContext<DataContext>(opt =>
 {
     opt.UseSqlServer(builder.Configuration.GetConnectionString("conStr"));
     opt.UseLazyLoadingProxies();
-    opt.UseLoggerFactory(DataContext.ContextLoggerFactory);
 });
 builder.Services.AddScoped<IPersonService,PersonService>()
     .AddScoped<ISkillService,SkillService>()

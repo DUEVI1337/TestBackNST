@@ -10,10 +10,5 @@ namespace BackTest.Services.Interface
         /// <param name="nameSkills"></param>
         /// <returns></returns>
         Task CheckContainsSkillDbAsync(List<string> nameSkills);
-        /// <summary>
-        /// Create new skill and add in database
-        /// </summary>
-        /// <param name="name">name skill</param>
-        Task NewSkillAsync(string name);
     }
 }

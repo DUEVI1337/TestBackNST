@@ -45,7 +45,6 @@ namespace BackTest.Data.Repository
         public async Task AddPersonSkillAsync(PersonSkills personSkill)
         {
             await _db.PersonSkills.AddAsync(personSkill);
-            await _db.SaveChangesAsync();
         }
 
         /// <summary>
@@ -55,7 +54,6 @@ namespace BackTest.Data.Repository
         public async Task UpdatePersonSkillAsync(PersonSkills personSkill)
         {
             _db.PersonSkills.Update(personSkill);
-            await _db.SaveChangesAsync();
         }
 
         /// <summary>
@@ -65,7 +63,6 @@ namespace BackTest.Data.Repository
         public async Task RemoveRangePersonSkillsAsync(List<PersonSkills> personSkills)
         {
             _db.PersonSkills.RemoveRange(personSkills);
-            await _db.SaveChangesAsync();
         }
 
         /// <summary>
