@@ -14,6 +14,7 @@ namespace BackTestUnitTests.Tests.Data
                 {
                     Name = "Egor",
                     DisplayName = "Duvanov",
+                    PersonSkills = new Dictionary<string, byte>(){ {"c#", 3 },{ "c++", 2} }
                 }
             };
         }

@@ -19,7 +19,6 @@ using Xunit;
 
 namespace BackTestIntegrationTests.Tests.ServicesTests
 {
-    [Collection("Services")]
     public class SkillServiceTests
     {
         private readonly ISkillService _skillService;
@@ -46,6 +45,8 @@ namespace BackTestIntegrationTests.Tests.ServicesTests
             _db = _app.Services.CreateScope().ServiceProvider.GetService<DataContext>();
             _repoSkill = new SkillRepository(_db);
             _skillService = new SkillService(_repoSkill);
+            _db.Database.EnsureDeleted();
+            _db.Database.EnsureCreated();
         }
 
         [Theory]
@@ -62,7 +63,6 @@ namespace BackTestIntegrationTests.Tests.ServicesTests
 
             var skillsActual = await _repoSkill.GetAllSkillsAsync();
             skillsActual.Should().BeEquivalentTo(skillsExpected);
-            _db.Database.EnsureDeleted();
         }
     }
 }

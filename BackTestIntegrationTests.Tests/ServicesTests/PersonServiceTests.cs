@@ -16,7 +16,6 @@ using Xunit;
 
 namespace BackTestIntegrationTests.Tests.ServicesTests
 {
-    [Collection("Services")]
     public class PersonServiceTests
     {
         private readonly IPersonService _personService;
@@ -42,6 +41,8 @@ namespace BackTestIntegrationTests.Tests.ServicesTests
             _db = _app.Services.CreateScope().ServiceProvider.GetService<DataContext>();
             _repoPerson = new PersonRepository(_db);
             _personService = new PersonService(_repoPerson);
+            _db.Database.EnsureDeleted();
+            _db.Database.EnsureCreated();
         }
 
         [Theory]
@@ -61,7 +62,6 @@ namespace BackTestIntegrationTests.Tests.ServicesTests
             //Assert
             var personActual = await _repoPerson.GetPersonByIdAsync(1);
             personActual.Should().BeEquivalentTo(personExpected);
-            await _db.Database.EnsureDeletedAsync();
         }
 
         [Theory]
@@ -87,7 +87,6 @@ namespace BackTestIntegrationTests.Tests.ServicesTests
 
             var personActual = await _repoPerson.GetPersonByIdAsync(idPerson);
             personActual.Should().BeEquivalentTo(personExpected);
-            await _db.Database.EnsureDeletedAsync();
         }
 
         [Theory]
@@ -106,7 +105,6 @@ namespace BackTestIntegrationTests.Tests.ServicesTests
             await _personService.DeletePersonAsync(idPerson);
 
             Assert.Null(await _repoPerson.GetPersonByIdAsync(idPerson));
-            await _db.Database.EnsureDeletedAsync();
         }
     }
 }
