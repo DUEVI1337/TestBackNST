@@ -23,9 +23,9 @@ namespace BackTest.Services
         public async Task CheckContainsSkillDbAsync(List<string> nameSkills)
         {
             var allSkills = await _skillRepository.GetAllSkillsAsync();
-            for(int i = 0; i < nameSkills.Count; i++)
+            for (int i = 0; i < nameSkills.Count; i++)
             {
-                if (!allSkills.Select(x => x.Name).Contains(nameSkills[i]))
+                if (!allSkills.Select(x => x.Name.ToLower()).Contains(nameSkills[i].ToLower()))
                 {
                     await NewSkillAsync(nameSkills[i]);
                 }

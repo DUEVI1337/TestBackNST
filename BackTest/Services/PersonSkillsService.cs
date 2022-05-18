@@ -29,12 +29,13 @@ namespace BackTest.Services
                 if (personSkills.Select(x => x.SkillName).Contains(newSkillPerson.Key))
                 {
                     await UpdatePersonSkillAsync(idPerson, newSkillPerson.Key, newSkillPerson.Value);
-                    personSkills = DeletePersonSkill(newSkillPerson.Key, personSkills); 
+                    personSkills = DeletePersonSkill(newSkillPerson.Key, personSkills);
                     continue;
                 }
                 await NewPersonSkillsAsync(idPerson, newSkillPerson.Key, newSkillPerson.Value);
             }
             await _personSkillsRepository.RemoveRangePersonSkillsAsync(personSkills);
+            await _personSkillsRepository.SaveAsync();
         }
 
         /// <summary>
@@ -66,6 +67,7 @@ namespace BackTest.Services
                 Level = levelSkill
             };
             await _personSkillsRepository.AddPersonSkillAsync(personSkill);
+            await _personSkillsRepository.SaveAsync();
         }
 
         /// <summary>
@@ -81,6 +83,7 @@ namespace BackTest.Services
             {
                 personSkills.Level = levelSkill;
                 await _personSkillsRepository.UpdatePersonSkillAsync(personSkills);
+                await _personSkillsRepository.SaveAsync();
             }
 
         }

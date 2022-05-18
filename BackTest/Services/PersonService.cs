@@ -22,7 +22,7 @@ namespace BackTest.Services
         /// <returns><inheritdoc/></returns>
         public async Task<List<PersonDto>> GetAllPersonsAsync()
         {
-            var personsListDto = Mapper.MapperListPersons(await _personRepository.GetAllPersonsAsync());
+            var personsListDto = MapperPerson.MapListPersons(await _personRepository.GetAllPersonsAsync());
             return personsListDto;
         }
 
@@ -38,7 +38,7 @@ namespace BackTest.Services
             {
                 return null;
             }
-            return Mapper.MapperPerson(person);
+            return MapperPerson.MapPerson(person);
         }
 
         /// <summary>
@@ -49,6 +49,7 @@ namespace BackTest.Services
         {
             var person = new Person() { Name = model.Name, DisplayName = model.DisplayName };
             await _personRepository.AddPersonAsync(person);
+            await _personRepository.SaveAsync();
             return person;
         }
 
@@ -68,6 +69,7 @@ namespace BackTest.Services
             person.Name = model.Name ?? person.Name;
             person.DisplayName = model.DisplayName ?? person.DisplayName;
             await _personRepository.UpdatePersonAsync(person);
+            await _personRepository.SaveAsync();
             return true;
         }
 
@@ -82,6 +84,7 @@ namespace BackTest.Services
             if (person != null)
             {
                 await _personRepository.RemovePersonAsync(person);
+                await _personRepository.SaveAsync();
                 return true;
             }
             return false;

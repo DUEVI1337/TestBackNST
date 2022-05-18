@@ -60,7 +60,7 @@ namespace BackTest.Controllers
             try
             {
                 var personDto = await _personService.GetPersonAsync(id);
-                if(personDto == null)
+                if (personDto == null)
                 {
                     return NotFound();
                 }
@@ -114,9 +114,9 @@ namespace BackTest.Controllers
             try
             {
                 var result = await _personService.UpdatePersonAsync(model, id);
-                if(result == true)
+                if (result == true)
                 {
-                    await _skillService.CheckContainsSkillDbAsync(model.PersonSkills.Select(x=>x.Key).ToList());
+                    await _skillService.CheckContainsSkillDbAsync(model.PersonSkills.Select(x => x.Key).ToList());
                     await _personSkillsService.ChangePersonSkillsAsync(model.PersonSkills, id);
                     return Ok();
                 }
@@ -144,7 +144,7 @@ namespace BackTest.Controllers
             try
             {
                 var result = await _personService.DeletePersonAsync(id);
-                if(result == true)
+                if (result == true)
                 {
                     return Ok();
                 }
