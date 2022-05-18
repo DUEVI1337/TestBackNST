@@ -12,11 +12,11 @@ namespace BackTestUnitTests.Tests.Data
             {
                 new UpdatePersonDto
                 {
-                     Name = "Egor",
-                     DisplayName = "Duvanov",
+                     Name = "EgorUpdate",
+                     DisplayName = "DuvanovUpdate",
                      PersonSkills = new Dictionary<string,byte> { {"c#", 3}, {"c++", 2} }
                 },
-                1
+                1 //id person
             };
         }
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

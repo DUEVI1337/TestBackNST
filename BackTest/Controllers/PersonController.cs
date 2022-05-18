@@ -35,7 +35,7 @@ namespace BackTest.Controllers
         {
             try
             {
-                return Json(await _personService.GetAllPersonsAsync());
+                return Ok(await _personService.GetAllPersonsAsync());
             }
             catch (Exception ex)
             {
@@ -64,7 +64,7 @@ namespace BackTest.Controllers
                 {
                     return NotFound();
                 }
-                return Json(personDto);
+                return Ok(personDto);
             }
             catch (Exception ex)
             {
