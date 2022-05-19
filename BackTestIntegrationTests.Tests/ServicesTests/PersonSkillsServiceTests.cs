@@ -18,34 +18,17 @@ using Xunit;
 
 namespace BackTestIntegrationTests.Tests.ServicesTests
 {
-    public class PersonSkillsServiceTests
+    public class PersonSkillsServiceTests : IClassFixture<WebAppFactoryTest<Program>>
     {
+        private readonly WebAppFactoryTest<Program> _factory;
         private readonly IPersonSkillsService _personSkillsService;
-        private readonly IPersonSkillsRepository _repoPersonSkills;
-        private readonly IPersonRepository _repoPerson;
-        private WebApplicationFactory<Program> _app;
         private DataContext _db;
 
-        public PersonSkillsServiceTests()
+        public PersonSkillsServiceTests(WebAppFactoryTest<Program> factory)
         {
-            _app = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
-                {
-                    var descriptor = services.SingleOrDefault(d => d.ServiceType ==
-                                                              typeof(DbContextOptions<DataContext>));
-                    services.Remove(descriptor);
-                    services.AddDbContext<DataContext>(opt =>
-                    {
-                        opt.UseInMemoryDatabase("test");
-                    });
-                });
-            });
-
-            _db = _app.Services.CreateScope().ServiceProvider.GetService<DataContext>();
-            _repoPersonSkills = new PersonSkillsRepository(_db);
-            _repoPerson = new PersonRepository(_db);
-            _personSkillsService = new PersonSkillsService(_repoPersonSkills);
+            _factory = factory;
+            _db = _factory.Services.CreateScope().ServiceProvider.GetService<DataContext>();
+            _personSkillsService = _factory.Services.CreateScope().ServiceProvider.GetService<IPersonSkillsService>();
             _db.Database.EnsureDeleted();
             _db.Database.EnsureCreated();
         }
@@ -59,31 +42,26 @@ namespace BackTestIntegrationTests.Tests.ServicesTests
             {
                 Id = idPerson,
                 Name = "Egor",
-                DisplayName = "Duvanov"
+                DisplayName = "duevi"
             };
             var personSkillsInit = new List<PersonSkills>()
             {
                 new PersonSkills
                 {
-                    Person = person,
                     PersonId = idPerson,
                     SkillName = "c##",
                     Level = 5
                 },
                 new PersonSkills
                 {
-                    Person = person,
                     PersonId = idPerson,
                     SkillName = "c--",
                     Level = 7
                 }
             };
-            await _repoPerson.AddPersonAsync(person);
-            foreach(var personSkill in personSkillsInit)
-            {
-                await _repoPersonSkills.AddPersonSkillAsync(personSkill);
-            }
-            await _repoPerson.SaveAsync();
+            await _db.Persons.AddAsync(person);
+            await _db.PersonSkills.AddRangeAsync(personSkillsInit);
+            await _db.SaveChangesAsync();
 
             var personSkillsExpected = new List<PersonSkills>()
             {
@@ -105,7 +83,7 @@ namespace BackTestIntegrationTests.Tests.ServicesTests
 
             await _personSkillsService.ChangePersonSkillsAsync(newPersonSkills, idPerson);
 
-            var personSkillsActual = await _repoPersonSkills.GetAllPersonSkillsAsync(idPerson);
+            var personSkillsActual = await _db.PersonSkills.Where(x=>x.PersonId==idPerson).ToListAsync();
             personSkillsActual.Should().BeEquivalentTo(personSkillsExpected);
         }
 
@@ -117,7 +95,7 @@ namespace BackTestIntegrationTests.Tests.ServicesTests
             {
                 Id = idPerson,
                 Name = "Egor",
-                DisplayName = "Duvanov"
+                DisplayName = "duevi"
             };
 
             var personSkillsExpected = new List<PersonSkills>()
@@ -137,12 +115,12 @@ namespace BackTestIntegrationTests.Tests.ServicesTests
                     Level = 2
                 }
             };
-            await _repoPerson.AddPersonAsync(person);
-            await _repoPerson.SaveAsync();
+            await _db.Persons.AddAsync(person);
+            await _db.SaveChangesAsync();
 
             await _personSkillsService.AddPersonSkillsAsync(newPersonSkills, idPerson);
 
-            var personSkillsActual = await _repoPersonSkills.GetAllPersonSkillsAsync(idPerson);
+            var personSkillsActual = await _db.PersonSkills.Where(x=>x.PersonId==idPerson).ToListAsync();
             personSkillsActual.Should().BeEquivalentTo(personSkillsExpected);
         }
     }

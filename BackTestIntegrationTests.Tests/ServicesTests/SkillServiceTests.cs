@@ -6,45 +6,27 @@ using BackTest.Models;
 using BackTest.Services;
 using BackTest.Services.Interface;
 using BackTestIntegrationTests.Tests.Data;
-using BackTestUnitTests.Tests.Data;
 using FluentAssertions;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
+using System.Linq;
 
 namespace BackTestIntegrationTests.Tests.ServicesTests
 {
-    public class SkillServiceTests
+    public class SkillServiceTests : IClassFixture<WebAppFactoryTest<Program>>
     {
+        private readonly WebAppFactoryTest<Program> _factory;
         private readonly ISkillService _skillService;
-        private readonly ISkillRepository _repoSkill;
-        private WebApplicationFactory<Program> _app;
         private DataContext _db;
 
-        public SkillServiceTests()
+        public SkillServiceTests(WebAppFactoryTest<Program> factory)
         {
-            _app = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
-                {
-                    var descriptor = services.SingleOrDefault(d => d.ServiceType ==
-                                                              typeof(DbContextOptions<DataContext>));
-                    services.Remove(descriptor);
-                    services.AddDbContext<DataContext>(opt =>
-                    {
-                        opt.UseInMemoryDatabase("test");
-                    });
-                });
-            });
-
-            _db = _app.Services.CreateScope().ServiceProvider.GetService<DataContext>();
-            _repoSkill = new SkillRepository(_db);
-            _skillService = new SkillService(_repoSkill);
+            _factory = factory;
+            _db = _factory.Services.CreateScope().ServiceProvider.GetService<DataContext>();
+            _skillService = _factory.Services.CreateScope().ServiceProvider.GetService<ISkillService>();
             _db.Database.EnsureDeleted();
             _db.Database.EnsureCreated();
         }
@@ -61,8 +43,8 @@ namespace BackTestIntegrationTests.Tests.ServicesTests
 
             await _skillService.CheckContainsSkillDbAsync(nameSkills);
 
-            var skillsActual = await _repoSkill.GetAllSkillsAsync();
-            skillsActual.Should().BeEquivalentTo(skillsExpected);
+            var skillsActual = await _db.Skills.ToListAsync();
+            Assert.Equal(skillsExpected.Count(), skillsActual.Count());
         }
     }
 }

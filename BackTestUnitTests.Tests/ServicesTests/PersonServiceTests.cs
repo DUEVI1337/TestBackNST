@@ -29,14 +29,14 @@ namespace BackTestUnitTests.Tests.ServicesTests
             //Arrange
             var personsInit = new List<Person>
             {
-                new Person { Id= 1, Name = "Egor", DisplayName = "Duvanov", PersonSkills = new List<PersonSkills>
+                new Person { Id= 1, Name = "Egor", DisplayName = "duevi", PersonSkills = new List<PersonSkills>
                 {
                     new PersonSkills { PersonId = 1, Level = 1, SkillName = "sdf"}
                 }}
             };
             var personsDtoExpected = new List<PersonDto>
             {
-                new PersonDto { Id = 1, Name = "Egor", DisplayName = "Duvanov", SkillsPerson = new Dictionary<string,byte>{ { "sdf", 1 } } },
+                new PersonDto { Id = 1, Name = "Egor", DisplayName = "duevi", SkillsPerson = new Dictionary<string,byte>{ { "sdf", 1 } } },
             };
             _repoPerson.Setup(x => x.GetAllPersonsAsync()).ReturnsAsync(personsInit);
 
@@ -56,7 +56,7 @@ namespace BackTestUnitTests.Tests.ServicesTests
             {
                 Id = idPerson,
                 Name = "Egor",
-                DisplayName = "Duvanov",
+                DisplayName = "duevi",
                 PersonSkills = new List<PersonSkills>
                 {
                     new PersonSkills { PersonId = 1, Level = 1, SkillName = "sdf" }
@@ -66,7 +66,7 @@ namespace BackTestUnitTests.Tests.ServicesTests
             {
                 Id = idPerson,
                 Name = "Egor",
-                DisplayName = "Duvanov",
+                DisplayName = "duevi",
                 SkillsPerson = new Dictionary<string, byte> { { "sdf", 1 } }
             };
             _repoPerson.Setup(x => x.GetPersonByIdAsync(idPerson)).ReturnsAsync(personInit);
@@ -99,7 +99,7 @@ namespace BackTestUnitTests.Tests.ServicesTests
             var personExpected = new Person()
             {
                 Name="Egor",
-                DisplayName="Duvanov"
+                DisplayName="duevi"
             };
             //Act
             var personActual = await _personService.CreatePersonAsync(model);
@@ -116,7 +116,7 @@ namespace BackTestUnitTests.Tests.ServicesTests
             {
                 Id = 1,
                 Name = "Egor",
-                DisplayName = "Duvanov",
+                DisplayName = "duevi",
                 PersonSkills = new List<PersonSkills>
                 {
                     new PersonSkills { PersonId = 1, Level = 1, SkillName = "sdf" }
@@ -152,7 +152,7 @@ namespace BackTestUnitTests.Tests.ServicesTests
             {
                 Id = 1,
                 Name = "Egor",
-                DisplayName = "Duvanov",
+                DisplayName = "duevi",
                 PersonSkills = new List<PersonSkills>
                 {
                     new PersonSkills { PersonId = 1, Level = 1, SkillName = "sdf" }

@@ -32,7 +32,7 @@ namespace BackTest.Data.Repository
         /// <returns><inheritdoc/></returns>
         public async Task<Person> GetPersonByIdAsync(long idPerson)
         {
-            var person = await _db.Persons.FindAsync(idPerson);
+            var person = await _db.Persons.Include(x=>x.PersonSkills).FirstOrDefaultAsync(x=>x.Id==idPerson);
             return person;
         }
 
@@ -49,7 +49,7 @@ namespace BackTest.Data.Repository
         /// <inheritdoc/>
         /// </summary>
         /// <param name="person"></param>
-        public async Task UpdatePersonAsync(Person person)
+        public void UpdatePerson(Person person)
         {
             _db.Persons.Update(person);
         }
@@ -58,7 +58,7 @@ namespace BackTest.Data.Repository
         /// <inheritdoc/>
         /// </summary>
         /// <param name="person"></param> 
-        public async Task RemovePersonAsync(Person person)
+        public void RemovePerson(Person person)
         {
             _db.Persons.Remove(person);
         }

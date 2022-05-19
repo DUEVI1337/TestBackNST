@@ -118,7 +118,7 @@ namespace BackTest.Controllers
                 {
                     await _skillService.CheckContainsSkillDbAsync(model.PersonSkills.Select(x => x.Key).ToList());
                     await _personSkillsService.ChangePersonSkillsAsync(model.PersonSkills, id);
-                    return Ok();
+                    return Ok(await _personService.GetPersonAsync(id));
                 }
                 return NotFound();
             }

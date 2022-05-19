@@ -26,12 +26,12 @@ namespace BackTest.Data.Repository.Interfaces
         /// Update <see cref="PersonSkills"/> in database
         /// </summary>
         /// <param name="personSkill"></param>
-        Task UpdatePersonSkillAsync(PersonSkills personSkill);
+        void UpdatePersonSkill(PersonSkills personSkill);
         /// <summary>
         /// Remove list <see cref="PersonSkills"/> from database
         /// </summary>
         /// <param name="personSkills"></param>
-        Task RemoveRangePersonSkillsAsync(List<PersonSkills> personSkills);
+        void RemoveRangePersonSkills(List<PersonSkills> personSkills);
         /// <summary>
         /// Save changes in database
         /// </summary>

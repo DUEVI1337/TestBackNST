@@ -12,7 +12,7 @@ namespace BackTestUnitTests.Tests.MappersTests
     {
         [Theory]
         [ClassData(typeof(PersonData))]
-        public async Task MapPerson_ReturnPersonDto(Person person)
+        public void MapPerson_ReturnPersonDto(Person person)
         {
             var personDtoExpected = new PersonDto
             {
@@ -29,7 +29,7 @@ namespace BackTestUnitTests.Tests.MappersTests
 
         [Theory]
         [ClassData(typeof(ListPersonData))]
-        public async Task MapListPersons_ReturnListPersonsDto(List<Person> persons)
+        public void MapListPersons_ReturnListPersonsDto(List<Person> persons)
         {
             var personsDtoExpected = new List<PersonDto>
             {

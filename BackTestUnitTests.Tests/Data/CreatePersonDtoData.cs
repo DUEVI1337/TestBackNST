@@ -13,7 +13,7 @@ namespace BackTestUnitTests.Tests.Data
                 new CreatePersonDto
                 {
                     Name = "Egor",
-                    DisplayName = "Duvanov",
+                    DisplayName = "duevi",
                     PersonSkills = new Dictionary<string, byte>(){ {"c#", 3 },{ "c++", 2} }
                 }
             };

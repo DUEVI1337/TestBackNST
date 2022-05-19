@@ -51,7 +51,7 @@ namespace BackTest.Data.Repository
         /// <inheritdoc/>
         /// </summary>
         /// <param name="personSkill"></param>
-        public async Task UpdatePersonSkillAsync(PersonSkills personSkill)
+        public void UpdatePersonSkill(PersonSkills personSkill)
         {
             _db.PersonSkills.Update(personSkill);
         }
@@ -60,7 +60,7 @@ namespace BackTest.Data.Repository
         /// <inheritdoc/>
         /// </summary>
         /// <param name="personSkills"></param>
-        public async Task RemoveRangePersonSkillsAsync(List<PersonSkills> personSkills)
+        public void RemoveRangePersonSkills(List<PersonSkills> personSkills)
         {
             _db.PersonSkills.RemoveRange(personSkills);
         }

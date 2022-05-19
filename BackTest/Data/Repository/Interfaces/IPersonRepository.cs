@@ -24,12 +24,12 @@ namespace BackTest.Data.Repository.Interfaces
         /// Update in database <see cref="Person"/>
         /// </summary>
         /// <param name="person"></param>
-        Task UpdatePersonAsync(Person person);
+        void UpdatePerson(Person person);
         /// <summary>
         /// Remove from database <see cref="Person"/> by him ID
         /// </summary>
         /// <param name="idPerson"></param>
-        Task RemovePersonAsync(Person person);
+        void RemovePerson(Person person);
         /// <summary>
         /// Save changes in database
         /// </summary>

@@ -68,7 +68,7 @@ namespace BackTest.Services
             }
             person.Name = model.Name ?? person.Name;
             person.DisplayName = model.DisplayName ?? person.DisplayName;
-            await _personRepository.UpdatePersonAsync(person);
+            _personRepository.UpdatePerson(person);
             await _personRepository.SaveAsync();
             return true;
         }
@@ -83,7 +83,7 @@ namespace BackTest.Services
             var person = await _personRepository.GetPersonByIdAsync(idPerson);
             if (person != null)
             {
-                await _personRepository.RemovePersonAsync(person);
+                _personRepository.RemovePerson(person);
                 await _personRepository.SaveAsync();
                 return true;
             }

@@ -26,7 +26,7 @@ namespace BackTest.Services
             for (int i = 0; i < newPersonSkills.Count; i++)
             {
                 var newSkillPerson = newPersonSkills.ElementAt(i);
-                if (personSkills.Select(x => x.SkillName).Contains(newSkillPerson.Key))
+                if (personSkills.Select(x => x.SkillName.ToLower()).Contains(newSkillPerson.Key.ToLower()))
                 {
                     await UpdatePersonSkillAsync(idPerson, newSkillPerson.Key, newSkillPerson.Value);
                     personSkills = DeletePersonSkill(newSkillPerson.Key, personSkills);
@@ -34,7 +34,7 @@ namespace BackTest.Services
                 }
                 await NewPersonSkillsAsync(idPerson, newSkillPerson.Key, newSkillPerson.Value);
             }
-            await _personSkillsRepository.RemoveRangePersonSkillsAsync(personSkills);
+            _personSkillsRepository.RemoveRangePersonSkills(personSkills);
             await _personSkillsRepository.SaveAsync();
         }
 
@@ -82,14 +82,14 @@ namespace BackTest.Services
             if (levelSkill != personSkills.Level)
             {
                 personSkills.Level = levelSkill;
-                await _personSkillsRepository.UpdatePersonSkillAsync(personSkills);
+                _personSkillsRepository.UpdatePersonSkill(personSkills);
                 await _personSkillsRepository.SaveAsync();
             }
 
         }
 
         /// <summary>
-        /// Remove <see cref="Skill"/> from database by skill name
+        /// Remove <see cref="PersonSkills"/> from List
         /// </summary>
         /// <param name="nameSkill"></param>
         /// <param name="personSkills"></param>

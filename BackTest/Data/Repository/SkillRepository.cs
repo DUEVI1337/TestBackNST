@@ -21,8 +21,7 @@ namespace BackTest.Data.Repository
         /// <returns><inheritdoc/></returns>
         public async Task<List<Skill>> GetAllSkillsAsync()
         {
-            List<Skill> skills = await _db.Skills.ToListAsync();
-            return skills;
+            return await _db.Skills.ToListAsync();
         }
 
         /// <summary>

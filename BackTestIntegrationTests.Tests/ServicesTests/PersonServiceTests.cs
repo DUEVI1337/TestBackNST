@@ -10,39 +10,60 @@ using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
 namespace BackTestIntegrationTests.Tests.ServicesTests
 {
-    public class PersonServiceTests
+    public class PersonServiceTests : IClassFixture<WebAppFactoryTest<Program>>
     {
+        private readonly WebAppFactoryTest<Program> _factory;
         private readonly IPersonService _personService;
-        private readonly IPersonRepository _repoPerson;
-        private WebApplicationFactory<Program> _app;
         private DataContext _db;
-        public PersonServiceTests()
+        public PersonServiceTests(WebAppFactoryTest<Program> factory)
         {
-            _app = new WebApplicationFactory<Program>().WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
-                {
-                    var descriptor = services.SingleOrDefault(d => d.ServiceType ==
-                                                              typeof(DbContextOptions<DataContext>));
-                    services.Remove(descriptor);
-                    services.AddDbContext<DataContext>(opt =>
-                    {
-                        opt.UseInMemoryDatabase("test");
-                    });
-                });
-            });
-
-            _db = _app.Services.CreateScope().ServiceProvider.GetService<DataContext>();
-            _repoPerson = new PersonRepository(_db);
-            _personService = new PersonService(_repoPerson);
+            _factory = factory;
+            _db = _factory.Services.CreateScope().ServiceProvider.GetService<DataContext>();
+            _personService = _factory.Services.CreateScope().ServiceProvider.GetService<IPersonService>();
             _db.Database.EnsureDeleted();
             _db.Database.EnsureCreated();
+        }
+
+        [Fact]
+        public async Task GetAllPersonAsync_ReturnListPersonDto()
+        {
+            var personsInit = new List<Person>()
+            {
+                new Person() {Id = 1, Name = "Egor", DisplayName="duevi" },
+                new Person() {Id = 2, Name = "Egor2", DisplayName="duevi2" }
+            };
+            await _db.Persons.AddRangeAsync(personsInit);
+            await _db.SaveChangesAsync();
+            var personsExpected = new List<PersonDto>()
+            {
+                new PersonDto() { Id = 1, Name = "Egor", DisplayName="duevi"},
+                new PersonDto() { Id = 2, Name = "Egor2", DisplayName="duevi2"},
+            };
+
+            List<PersonDto> personsActual = await _personService.GetAllPersonsAsync();
+
+            Assert.Equal(personsActual.Count, personsExpected.Count);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        public async Task GetPersonAsync_ReturnFindPerson(long id)
+        {
+            var personSkills = new List<PersonSkills>();
+            var personInit = new Person() { Id = id, Name = "Egor", DisplayName = "duevi", PersonSkills = personSkills };
+            await _db.Persons.AddAsync(personInit);
+            await _db.SaveChangesAsync();
+
+            PersonDto personActual = await _personService.GetPersonAsync(id);
+
+            Assert.NotNull(personActual);
         }
 
         [Theory]
@@ -54,14 +75,14 @@ namespace BackTestIntegrationTests.Tests.ServicesTests
             {
                 Id = 1,
                 Name = "Egor",
-                DisplayName = "Duvanov"
+                DisplayName = "duevi"
             };
             //Act
             await _personService.CreatePersonAsync(model);
 
             //Assert
-            var personActual = await _repoPerson.GetPersonByIdAsync(1);
-            personActual.Should().BeEquivalentTo(personExpected);
+            var personActual = await _db.Persons.FindAsync((long)1);
+            Assert.NotNull(personActual);
         }
 
         [Theory]
@@ -72,7 +93,7 @@ namespace BackTestIntegrationTests.Tests.ServicesTests
             {
                 Id = idPerson,
                 Name = "Egor",
-                DisplayName = "Duvanov"
+                DisplayName = "duevi"
             };
             var personExpected = new Person()
             {
@@ -80,12 +101,13 @@ namespace BackTestIntegrationTests.Tests.ServicesTests
                 Name = model.Name,
                 DisplayName = model.DisplayName
             };
-            await _repoPerson.AddPersonAsync(personInit);
-            await _repoPerson.SaveAsync();
+            await _db.Persons.AddAsync(personInit);
+            await _db.SaveChangesAsync();
 
             await _personService.UpdatePersonAsync(model, idPerson);
 
-            var personActual = await _repoPerson.GetPersonByIdAsync(idPerson);
+            await _db.Entry(personInit).ReloadAsync();
+            var personActual = await _db.Persons.FindAsync(idPerson);
             personActual.Should().BeEquivalentTo(personExpected);
         }
 
@@ -97,14 +119,16 @@ namespace BackTestIntegrationTests.Tests.ServicesTests
             {
                 Id = idPerson,
                 Name = "Egor",
-                DisplayName = "Duvanov"
+                DisplayName = "duevi"
             };
-            await _repoPerson.AddPersonAsync(personInit);
-            await _repoPerson.SaveAsync();
+            await _db.Persons.AddAsync(personInit);
+            await _db.SaveChangesAsync();
 
             await _personService.DeletePersonAsync(idPerson);
 
-            Assert.Null(await _repoPerson.GetPersonByIdAsync(idPerson));
+            await _db.Entry(personInit).ReloadAsync();
+            var personActual = await _db.Persons.FindAsync(idPerson);
+            Assert.Null(personActual);
         }
     }
 }
